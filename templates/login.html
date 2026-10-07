@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Login - Campus Automation{% endblock %}
+{% block content %}
+<div class="container">
+  <div class="login-box">
+    <div class="panel p-4">
+      <h2 class="h4 mb-1">Sign in</h2>
+      <p class="text-muted small">Use the email and password given by your administrator.</p>
+      <form method="post" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label" for="email">Email</label>
+          <input class="form-control" id="email" name="email" type="email" required autofocus>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="password">Password</label>
+          <input class="form-control" id="password" name="password" type="password" required>
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Login</button>
+      </form>
+    </div>
+    <div class="panel mt-3 small text-muted">
+      <strong class="text-body">Demo accounts (academic prototype)</strong><br>
+      Admin: admin@campus.edu / Admin@123<br>
+      Faculty: meera@campus.edu / Faculty@123<br>
+      Student: shruti@campus.edu / Student@123
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stat %}
+{% block title %}Faculty Dashboard{% endblock %}
+{% block heading %}Faculty Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">{{ stat("Students", total_students) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Marked Today", marked_today, "attendance entries") }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Overall Attendance", overall.pct ~ "%", overall.total ~ " records") }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Department", me.department, me.designation) }}</div>
+</div>
+<h3 class="h5 mb-2">Quick actions</h3>
+<div class="row g-3 mb-3">
+  {% for endpoint, title, text in [
+    ("attendance_mark", "Mark Attendance", "Record Present / Absent for a date"),
+    ("attendance_report", "Attendance Reports", "Filters, totals and percentages"),
+    ("students_list", "Student Management", "Search, add and update students"),
+    ("marks_list", "Upload Marks", "Add or update subject marks"),
+    ("notices_list", "View Notices", "Latest college announcements"),
+    ("my_profile", "Faculty Profile", "Your details")] %}
+  <div class="col-sm-6 col-lg-4"><a class="action-card" href="{{ url_for(endpoint) }}"><strong>{{ title }}</strong><span>{{ text }}</span></a></div>
+  {% endfor %}
+</div>
+<div class="row g-3">
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Attendance - last 7 recorded days</h3>
+    {% if trend.labels %}<div class="chart-box"><canvas id="trendChart"></canvas></div>
+    {% else %}<div class="empty-state"><strong>No attendance yet</strong>Mark attendance to see the chart.</div>{% endif %}</div></div>
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Recent notices</h3>
+    {% for n in notices %}<div class="notice-card"><div class="date">{{ n.notice_date }}</div><h5>{{ n.title }}</h5><div>{{ n.description }}</div></div>
+    {% else %}<div class="empty-state"><strong>No notices</strong></div>{% endfor %}</div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  var trend = {{ trend|tojson }};
+  if (trend.labels.length) new Chart(document.getElementById("trendChart"), {
+    type: "bar", data: { labels: trend.labels, datasets: [
+      { label: "Present", data: trend.present, backgroundColor: "#0f766e" },
+      { label: "Absent", data: trend.absent, backgroundColor: "#d1495b" }] },
+    options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+</script>
+{% endblock %}

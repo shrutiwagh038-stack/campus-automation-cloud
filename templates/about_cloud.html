@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}About Cloud Deployment{% endblock %}
+{% block heading %}About Cloud Deployment{% endblock %}
+{% block content %}
+<div class="{{ '' if session.user_id else 'container py-4' }}">
+  {% if not session.user_id %}<h1 class="h2 mb-3">About Cloud Deployment</h1>{% endif %}
+  <div class="panel mb-3">
+    <h3 class="panel-title">System architecture</h3>
+    <div class="flow">
+      <span class="step">User</span><span class="arrow">&rarr;</span><span class="step">Web Browser</span><span class="arrow">&rarr;</span>
+      <span class="step">Internet</span><span class="arrow">&rarr;</span><span class="step">Render Cloud</span><span class="arrow">&rarr;</span>
+      <span class="step">Flask Application</span><span class="arrow">&rarr;</span><span class="step">Database</span>
+    </div>
+  </div>
+  <div class="row g-3">
+    {% for title, text in [
+      ("GitHub source control", "The code is stored in a GitHub repository. Every change is versioned, and pushing to the main branch is what triggers a new deployment."),
+      ("Render cloud hosting", "Render pulls the code from GitHub, installs the packages in requirements.txt and starts the app with gunicorn. The application runs on Render's servers, not on a personal computer."),
+      ("Web-based access", "Users only need a browser and an internet connection. Nothing is installed on their devices."),
+      ("Centralized application", "Admin, faculty and students all use the same running application and the same database, so everyone sees the same up-to-date data."),
+      ("Scalability concept", "Cloud platforms can run a bigger server or more copies of an application as usage grows. This project runs as a single small instance, so it demonstrates the concept but is not a highly scalable system."),
+      ("Database considerations", "SQLite is a file-based database that is ideal for this academic prototype. On Render's free plan its file is stored on temporary disk and can reset after a restart or redeploy (the app re-creates demo data when this happens). For real production use, a managed PostgreSQL database would be the better choice.")] %}
+    <div class="col-md-6"><div class="feature"><h5>{{ title }}</h5><p>{{ text }}</p></div></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

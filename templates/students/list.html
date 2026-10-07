@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import delete_button, empty %}
+{% block title %}Students{% endblock %}
+{% block heading %}Student Management{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+    <form method="get" class="d-flex flex-wrap gap-2">
+      <input class="form-control" style="width:220px" name="q" value="{{ q }}" placeholder="Search name or email">
+      <select class="form-select" style="width:210px" name="department">
+        <option value="">All departments</option>
+        {% for d in DEPARTMENTS %}<option value="{{ d }}" {{ 'selected' if d == dept }}>{{ d }}</option>{% endfor %}
+      </select>
+      <button class="btn btn-outline-primary" type="submit">Search</button>
+      {% if q or dept %}<a class="btn btn-link" href="{{ url_for('students_list') }}">Clear</a>{% endif %}
+    </form>
+    <a class="btn btn-primary" href="{{ url_for('students_add') }}">+ Add Student</a>
+  </div>
+  {% if students %}
+  <div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Semester</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>{% for s in students %}
+      <tr><td><a href="{{ url_for('students_view', sid=s.id) }}">{{ s.name }}</a></td><td>{{ s.email }}</td>
+        <td>{{ s.department }}</td><td>{{ s.semester }}</td>
+        <td class="text-end text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('students_edit', sid=s.id) }}">Edit</a>
+          {% if session.role == 'admin' %}{{ delete_button(url_for('students_delete', sid=s.id), 'Delete ' ~ s.name ~ '? Their login, attendance and marks will also be deleted.') }}{% endif %}
+        </td></tr>{% endfor %}</tbody>
+  </table></div>
+  <div class="text-muted small mt-2">{{ students|length }} student(s)</div>
+  {% else %}{{ empty("No students found", "Try a different search or add a new student.") }}{% endif %}
+</div>
+{% endblock %}

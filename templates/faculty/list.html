@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "_macros.html" import delete_button, empty %}
+{% block title %}Faculty{% endblock %}
+{% block heading %}Faculty Management{% endblock %}
+{% block content %}
+<div class="panel">
+  <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+    <form method="get" class="d-flex flex-wrap gap-2">
+      <input class="form-control" style="width:220px" name="q" value="{{ q }}" placeholder="Search name or email">
+      <select class="form-select" style="width:210px" name="department">
+        <option value="">All departments</option>
+        {% for d in DEPARTMENTS %}<option value="{{ d }}" {{ 'selected' if d == dept }}>{{ d }}</option>{% endfor %}
+      </select>
+      <button class="btn btn-outline-primary" type="submit">Search</button>
+      {% if q or dept %}<a class="btn btn-link" href="{{ url_for('faculty_list') }}">Clear</a>{% endif %}
+    </form>
+    <a class="btn btn-primary" href="{{ url_for('faculty_add') }}">+ Add Faculty</a>
+  </div>
+  {% if faculty %}
+  <div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th class="text-end">Actions</th></tr></thead>
+    <tbody>{% for f in faculty %}
+      <tr><td>{{ f.name }}</td><td>{{ f.email }}</td><td>{{ f.department }}</td><td>{{ f.designation }}</td>
+        <td class="text-end text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('faculty_edit', fid=f.id) }}">Edit</a>
+          {{ delete_button(url_for('faculty_delete', fid=f.id), 'Delete ' ~ f.name ~ '? Their login will also be deleted.') }}
+        </td></tr>{% endfor %}</tbody>
+  </table></div>
+  <div class="text-muted small mt-2">{{ faculty|length }} faculty member(s)</div>
+  {% else %}{{ empty("No faculty found", "Try a different search or add a faculty member.") }}{% endif %}
+</div>
+{% endblock %}

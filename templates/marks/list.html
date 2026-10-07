@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import delete_button, empty, pct_bar %}
+{% block title %}Marks{% endblock %}
+{% block heading %}{{ 'My Marks' if readonly else 'Marks Management' }}{% endblock %}
+{% block content %}
+<div class="panel">
+  {% if not readonly %}
+  <div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+    <form method="get" class="d-flex flex-wrap gap-2">
+      <select class="form-select" style="width:210px" name="student"><option value="">All students</option>
+        {% for s in all_students %}<option value="{{ s.id }}" {{ 'selected' if f.student == s.id|string }}>{{ s.name }}</option>{% endfor %}</select>
+      <input class="form-control" style="width:200px" name="subject" value="{{ f.subject }}" placeholder="Subject">
+      <button class="btn btn-outline-primary" type="submit">Filter</button>
+      {% if f.student or f.subject %}<a class="btn btn-link" href="{{ url_for('marks_list') }}">Clear</a>{% endif %}
+    </form>
+    <a class="btn btn-primary" href="{{ url_for('marks_add') }}">+ Add Marks</a>
+  </div>
+  {% endif %}
+  {% if marks %}
+  <div class="table-responsive"><table class="table table-hover">
+    <thead><tr>{% if not readonly %}<th>Student</th>{% endif %}<th>Subject</th><th>Obtained</th><th>Maximum</th><th style="min-width:160px">Percentage</th>{% if not readonly %}<th class="text-end">Actions</th>{% endif %}</tr></thead>
+    <tbody>{% for m in marks %}
+      <tr>{% if not readonly %}<td>{{ m.name }}</td>{% endif %}<td>{{ m.subject }}</td>
+        <td>{{ m.obtained|round(1) }}</td><td>{{ m.maximum|round(1) }}</td><td>{{ pct_bar(m.pct) }}</td>
+        {% if not readonly %}<td class="text-end text-nowrap">
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('marks_edit', mid=m.id) }}">Edit</a>
+          {{ delete_button(url_for('marks_delete', mid=m.id), 'Delete these marks?') }}</td>{% endif %}</tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}{{ empty("No marks found", "Marks you add will appear here.") }}{% endif %}
+</div>
+{% endblock %}

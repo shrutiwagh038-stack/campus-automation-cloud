@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container"><div class="error-box panel p-5">
+  <div class="code">{{ code }}</div>
+  <h2 class="h4 mt-2">{{ title }}</h2>
+  <p class="text-muted">{{ message }}</p>
+  <a class="btn btn-primary" href="{{ url_for('dashboard') if session.user_id else url_for('home') }}">
+    {{ 'Back to dashboard' if session.user_id else 'Back to home' }}</a>
+</div></div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_macros.html" import delete_button, empty %}
+{% block title %}Notices{% endblock %}
+{% block heading %}Notices{% endblock %}
+{% block content %}
+<div class="d-flex flex-wrap gap-2 justify-content-between mb-3">
+  <form method="get" class="d-flex gap-2">
+    <input class="form-control" style="width:240px" name="q" value="{{ q }}" placeholder="Search notices">
+    <button class="btn btn-outline-primary" type="submit">Search</button>
+    {% if q %}<a class="btn btn-link" href="{{ url_for('notices_list') }}">Clear</a>{% endif %}
+  </form>
+  {% if session.role == 'admin' %}<a class="btn btn-primary" href="{{ url_for('notices_add') }}">+ Add Notice</a>{% endif %}
+</div>
+{% for n in notices %}
+<div class="notice-card">
+  <div class="d-flex justify-content-between align-items-start gap-2">
+    <div><div class="date">{{ n.notice_date }}</div><h5>{{ n.title }}</h5></div>
+    {% if session.role == 'admin' %}<div class="text-nowrap">
+      <a class="btn btn-sm btn-outline-primary" href="{{ url_for('notices_edit', nid=n.id) }}">Edit</a>
+      {{ delete_button(url_for('notices_delete', nid=n.id), 'Delete this notice?') }}</div>{% endif %}
+  </div>
+  <div style="white-space:pre-line">{{ n.description }}</div>
+</div>
+{% else %}<div class="panel">{{ empty("No notices found", "New notices will appear here.") }}</div>{% endfor %}
+{% endblock %}

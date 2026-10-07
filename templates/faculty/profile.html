@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Faculty Profile{% endblock %}
+{% block heading %}My Profile{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:560px">
+  <h3 class="panel-title">{{ member.name }}</h3>
+  <table class="table table-sm">
+    <tr><th style="width:140px">Email</th><td>{{ member.email }}</td></tr>
+    <tr><th>Department</th><td>{{ member.department }}</td></tr>
+    <tr><th>Designation</th><td>{{ member.designation }}</td></tr>
+    <tr><th>Role</th><td>Faculty</td></tr>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,41 @@
+{# Small reusable pieces used by many pages #}
+
+{% macro csrf() %}<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% endmacro %}
+
+{% macro stat(label, value, sub='') %}
+<div class="stat-card">
+  <div class="label">{{ label }}</div>
+  <div class="value">{{ value }}</div>
+  {% if sub %}<div class="sub">{{ sub }}</div>{% endif %}
+</div>
+{% endmacro %}
+
+{# Coloured attendance bar: green >= 75, amber 50-74, red below 50 #}
+{% macro pct_bar(p, total=1) %}
+{% if total %}
+<div class="d-flex align-items-center gap-2">
+  <div class="progress flex-grow-1" style="min-width:80px">
+    <div class="progress-bar {{ 'bg-success' if p >= 75 else ('bg-warning' if p >= 50 else 'bg-danger') }}"
+         style="width: {{ p }}%"></div>
+  </div>
+  <span class="pct-label">{{ p }}%</span>
+</div>
+{% else %}<span class="text-muted">No records</span>{% endif %}
+{% endmacro %}
+
+{% macro delete_button(action, message) %}
+<form method="post" action="{{ action }}" data-confirm="{{ message }}" class="d-inline">
+  {{ csrf() }}
+  <button class="btn btn-sm btn-outline-danger" type="submit">Delete</button>
+</form>
+{% endmacro %}
+
+{% macro errors_box(errors) %}
+{% if errors %}
+<div class="alert alert-danger"><ul class="mb-0 ps-3">{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>
+{% endif %}
+{% endmacro %}
+
+{% macro empty(title, text) %}
+<div class="empty-state"><strong>{{ title }}</strong>{{ text }}</div>
+{% endmacro %}

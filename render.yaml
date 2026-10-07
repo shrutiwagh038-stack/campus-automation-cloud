@@ -1,0 +1,13 @@
+# Optional: lets Render create the service automatically from GitHub ("Blueprint").
+# If you create the service by hand in the Render dashboard, you can ignore this file.
+services:
+  - type: web
+    name: campus-automation
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.3

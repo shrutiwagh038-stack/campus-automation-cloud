@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stat, pct_bar, empty %}
+{% block title %}Student Profile{% endblock %}
+{% block heading %}{{ 'My Profile' if session.role == 'student' else 'Student Profile' }}{% endblock %}
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">{{ stat("Name", student.name, student.email) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Department", student.department, "Semester " ~ student.semester) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Attendance", att.pct ~ "%", att.present ~ " present / " ~ att.absent ~ " absent") }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Total Classes", att.total) }}</div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-6"><div class="panel" id="attendance"><h3 class="panel-title">Attendance</h3>
+    <div class="mb-3">{{ pct_bar(att.pct, att.total) }}</div>
+    {% if records %}<div class="table-responsive" style="max-height:340px;overflow:auto"><table class="table table-sm">
+      <thead><tr><th>Date</th><th>Status</th></tr></thead><tbody>
+      {% for r in records %}<tr><td>{{ r.attendance_date }}</td>
+        <td><span class="badge text-bg-{{ 'success' if r.status == 'Present' else 'danger' }}">{{ r.status }}</span></td></tr>{% endfor %}
+      </tbody></table></div>
+    {% else %}{{ empty("No attendance records", "Records appear after attendance is marked.") }}{% endif %}</div></div>
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Marks</h3>
+    {% if marks %}<div class="table-responsive"><table class="table table-sm">
+      <thead><tr><th>Subject</th><th>Obtained</th><th>Max</th><th>%</th></tr></thead><tbody>
+      {% for m in marks %}<tr><td>{{ m.subject }}</td><td>{{ m.obtained|round(1) }}</td><td>{{ m.maximum|round(1) }}</td><td>{{ m.pct }}%</td></tr>{% endfor %}
+      </tbody></table></div>
+    {% else %}{{ empty("No marks yet", "Marks appear once uploaded.") }}{% endif %}</div></div>
+</div>
+{% if session.role != 'student' %}<a class="btn btn-link mt-2" href="{{ url_for('students_list') }}">&larr; Back to students</a>{% endif %}
+{% endblock %}

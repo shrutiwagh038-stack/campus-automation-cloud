@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stat, pct_bar, empty %}
+{% block title %}Attendance Report{% endblock %}
+{% block heading %}Attendance Report{% endblock %}
+{% block content %}
+<div class="panel mb-3">
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-3"><label class="form-label small mb-1">Student</label>
+      <select class="form-select" name="student"><option value="">All students</option>
+        {% for s in all_students %}<option value="{{ s.id }}" {{ 'selected' if f.student == s.id|string }}>{{ s.name }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label small mb-1">Department</label>
+      <select class="form-select" name="department"><option value="">All</option>
+        {% for d in DEPARTMENTS %}<option value="{{ d }}" {{ 'selected' if d == f.department }}>{{ d }}</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label small mb-1">From</label><input class="form-control" type="date" name="date_from" value="{{ f.date_from }}"></div>
+    <div class="col-md-2"><label class="form-label small mb-1">To</label><input class="form-control" type="date" name="date_to" value="{{ f.date_to }}"></div>
+    <div class="col-md-2"><label class="form-label small mb-1">Status</label>
+      <select class="form-select" name="status"><option value="">Any</option>
+        {% for st in ['Present','Absent'] %}<option {{ 'selected' if st == f.status }}>{{ st }}</option>{% endfor %}</select></div>
+    <div class="col-12"><button class="btn btn-primary" type="submit">Apply filters</button>
+      <a class="btn btn-link" href="{{ url_for('attendance_report') }}">Clear</a></div>
+  </form>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">{{ stat("Total Classes", totals.total) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Present", totals.present) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Absent", totals.absent) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Attendance %", totals.pct ~ "%") }}</div>
+</div>
+<div class="panel mb-3"><h3 class="panel-title">Student-wise summary</h3>
+  {% if summary %}<div class="table-responsive"><table class="table table-hover">
+    <thead><tr><th>Student</th><th>Department</th><th>Total</th><th>Present</th><th>Absent</th><th style="min-width:180px">Attendance %</th></tr></thead>
+    <tbody>{% for r in summary %}<tr><td><a href="{{ url_for('students_view', sid=r.id) }}">{{ r.name }}</a></td><td>{{ r.department }}</td>
+      <td>{{ r.total }}</td><td>{{ r.present }}</td><td>{{ r.absent }}</td><td>{{ pct_bar(r.pct, r.total) }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <div class="text-muted small mt-2">Green: 75% or more &middot; Amber: 50-74% &middot; Red: below 50%</div>
+  {% else %}{{ empty("No students found", "Change the filters above.") }}{% endif %}
+</div>
+<div class="panel"><h3 class="panel-title">Detailed records <span class="text-muted fw-normal small">(latest 300)</span></h3>
+  {% if records %}<div class="table-responsive"><table class="table table-sm">
+    <thead><tr><th>Student</th><th>Date</th><th>Status</th></tr></thead>
+    <tbody>{% for r in records %}<tr><td>{{ r.name }}</td><td>{{ r.attendance_date }}</td>
+      <td><span class="badge text-bg-{{ 'success' if r.status == 'Present' else 'danger' }}">{{ r.status }}</span></td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% else %}{{ empty("No attendance records", "No records match these filters.") }}{% endif %}
+</div>
+{% endblock %}

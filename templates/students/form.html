@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, errors_box %}
+{% block title %}{{ 'Edit' if editing else 'Add' }} Student{% endblock %}
+{% block heading %}{{ 'Edit' if editing else 'Add' }} Student{% endblock %}
+{% block content %}
+<div class="panel" style="max-width:640px">
+  {{ errors_box(errors) }}
+  <form method="post" novalidate>{{ csrf() }}
+    <div class="mb-3"><label class="form-label">Full name</label>
+      <input class="form-control" name="name" value="{{ student.name }}" required></div>
+    <div class="mb-3"><label class="form-label">Email</label>
+      <input class="form-control" type="email" name="email" value="{{ student.email }}" required>
+      {% if not editing %}<div class="form-text">A login account is created automatically with a temporary password.</div>{% endif %}</div>
+    <div class="row">
+      <div class="col-md-8 mb-3"><label class="form-label">Department</label>
+        <select class="form-select" name="department" required><option value="">Select...</option>
+          {% for d in DEPARTMENTS %}<option value="{{ d }}" {{ 'selected' if student.department == d }}>{{ d }}</option>{% endfor %}</select></div>
+      <div class="col-md-4 mb-3"><label class="form-label">Semester</label>
+        <select class="form-select" name="semester" required><option value="">Select...</option>
+          {% for s in SEMESTERS %}<option value="{{ s }}" {{ 'selected' if student.semester|string == s|string }}>{{ s }}</option>{% endfor %}</select></div>
+    </div>
+    <button class="btn btn-primary" type="submit">{{ 'Update' if editing else 'Save' }} Student</button>
+    <a class="btn btn-link" href="{{ url_for('students_list') }}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

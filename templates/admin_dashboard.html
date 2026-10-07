@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stat %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block heading %}Admin Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">{{ stat("Total Students", counts.students) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Total Faculty", counts.faculty) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Attendance Records", counts.attendance, overall.pct ~ "% overall present") }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Notices", counts.notices, counts.marks ~ " marks records") }}</div>
+</div>
+<div class="row g-3 mb-3">
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Students per department</h3>
+    {% if dept_data.labels %}<div class="chart-box"><canvas id="deptChart"></canvas></div>
+    {% else %}<div class="empty-state"><strong>No students yet</strong>Add students to see this chart.</div>{% endif %}</div></div>
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Attendance - last 7 recorded days</h3>
+    {% if trend.labels %}<div class="chart-box"><canvas id="trendChart"></canvas></div>
+    {% else %}<div class="empty-state"><strong>No attendance yet</strong>Faculty can mark attendance.</div>{% endif %}</div></div>
+</div>
+<div class="panel"><div class="d-flex justify-content-between"><h3 class="panel-title">Recent notices</h3>
+  <a href="{{ url_for('notices_list') }}">View all</a></div>
+  {% for n in notices %}<div class="notice-card"><div class="date">{{ n.notice_date }}</div><h5>{{ n.title }}</h5><div>{{ n.description }}</div></div>
+  {% else %}<div class="empty-state"><strong>No notices</strong></div>{% endfor %}
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  var dept = {{ dept_data|tojson }}, trend = {{ trend|tojson }};
+  if (dept.labels.length) new Chart(document.getElementById("deptChart"), {
+    type: "bar", data: { labels: dept.labels, datasets: [{ label: "Students", data: dept.values, backgroundColor: "#0f766e" }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+  if (trend.labels.length) new Chart(document.getElementById("trendChart"), {
+    type: "bar", data: { labels: trend.labels, datasets: [
+      { label: "Present", data: trend.present, backgroundColor: "#0f766e" },
+      { label: "Absent", data: trend.absent, backgroundColor: "#d1495b" }] },
+    options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } } });
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Campus Automation System{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <h1>Campus Automation System</h1>
+    <p class="lead my-3">One cloud-hosted web application for student records, faculty records, attendance, marks and notices -
+      available to administrators, faculty and students from any browser.</p>
+    <a href="{{ url_for('login') }}" class="btn btn-light btn-lg me-2">Login</a>
+    <a href="{{ url_for('about_cloud') }}" class="btn btn-outline-light btn-lg">About Cloud Deployment</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2 class="mb-4">Features</h2>
+    <div class="row g-3">
+      {% for title, text in [
+        ("Role-based access", "Separate secure logins and views for Admin, Faculty and Student."),
+        ("Student &amp; faculty records", "Add, search, update and delete records from one place."),
+        ("Attendance tracking", "Mark daily attendance and view percentage reports with filters."),
+        ("Marks management", "Record subject marks with validation and automatic percentages."),
+        ("Notice board", "Admin publishes notices that everyone can read instantly."),
+        ("Dashboard analytics", "Charts and totals calculated from real database records.")] %}
+      <div class="col-md-6 col-lg-4"><div class="feature"><h5>{{ title|safe }}</h5><p>{{ text }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section pt-0">
+  <div class="container">
+    <div class="panel">
+      <h3 class="h5 mb-3">How the cloud-based system works</h3>
+      <div class="flow mb-3">
+        <span class="step">User</span><span class="arrow">&rarr;</span>
+        <span class="step">Web Browser</span><span class="arrow">&rarr;</span>
+        <span class="step">Internet</span><span class="arrow">&rarr;</span>
+        <span class="step">Render Cloud</span><span class="arrow">&rarr;</span>
+        <span class="step">Flask Application</span><span class="arrow">&rarr;</span>
+        <span class="step">Database</span>
+      </div>
+      <p class="mb-0 text-muted">The application runs on a cloud server, not on each user's computer. Everyone opens the same
+        website, so all data is kept in one central place. <a href="{{ url_for('about_cloud') }}">Read more</a>.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

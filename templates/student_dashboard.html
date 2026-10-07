@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import stat, pct_bar %}
+{% block title %}Student Dashboard{% endblock %}
+{% block heading %}Student Dashboard{% endblock %}
+{% block content %}
+<div class="row g-3 mb-3">
+  <div class="col-6 col-lg-3">{{ stat("Student", me.name, me.email) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Department", me.department, "Semester " ~ me.semester) }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Attendance", att.pct ~ "%", att.present ~ " of " ~ att.total ~ " classes") }}</div>
+  <div class="col-6 col-lg-3">{{ stat("Average Marks", (avg ~ "%") if avg is not none else "-", marks|length ~ " subjects") }}</div>
+</div>
+<div class="row g-3">
+  <div class="col-lg-6">
+    <div class="panel mb-3"><h3 class="panel-title">My attendance</h3>{{ pct_bar(att.pct, att.total) }}
+      {% if att.pct < 75 and att.total %}<div class="text-danger small mt-2">Your attendance is below 75%.</div>{% endif %}</div>
+    <div class="panel"><h3 class="panel-title">Marks summary</h3>
+      {% if marks %}<div class="chart-box"><canvas id="marksChart"></canvas></div>
+      {% else %}<div class="empty-state"><strong>No marks yet</strong>Marks will appear once your faculty uploads them.</div>{% endif %}</div>
+  </div>
+  <div class="col-lg-6"><div class="panel"><h3 class="panel-title">Recent notices</h3>
+    {% for n in notices %}<div class="notice-card"><div class="date">{{ n.notice_date }}</div><h5>{{ n.title }}</h5><div>{{ n.description }}</div></div>
+    {% else %}<div class="empty-state"><strong>No notices</strong></div>{% endfor %}
+    <a href="{{ url_for('notices_list') }}">All notices</a></div></div>
+</div>
+{% endblock %}
+{% block scripts %}{% if marks %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  var m = {{ marks|map(attribute='pct')|list|tojson }}, l = {{ marks|map(attribute='subject')|list|tojson }};
+  new Chart(document.getElementById("marksChart"), { type: "bar",
+    data: { labels: l, datasets: [{ label: "Percentage", data: m, backgroundColor: "#0f766e" }] },
+    options: { maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } } });
+</script>{% endif %}{% endblock %}
